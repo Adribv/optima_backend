@@ -2,27 +2,6 @@ require("dotenv").config();
 const User = require('../Model/Student');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-<<<<<<< HEAD
-const axios = require('axios'); 
-const PushToken = require('../Model/PushToken');
-const admin = require('firebase-admin');
-
-
-
-async function fetchSchoolUsers() {
-    try {
-        const formData = new FormData();
-        formData.append('api_key', process.env.API_KEY); // Use environment variable for security
-
-        // Make the POST request
-        const response = await axios.post('https://app.edisha.org/index.php/resource/GetUsers', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-
-        if (response.data.status && Array.isArray(response.data.data)) {
-=======
 const axios = require('axios');
 const FormData = require('form-data');
 const PushToken = require('../Model/PushToken');
@@ -94,27 +73,18 @@ async function fetchSchoolUsers() {
         
         if (response.data.status && Array.isArray(response.data.data)) {
             console.log(`Received ${response.data.data.length} users`);
->>>>>>> b280240 (first commit)
             return response.data.data;
         }
         
         console.error("❌ Invalid response from school API:", response.data);
         return [];
     } catch (error) {
-<<<<<<< HEAD
-        console.error("❌ Error fetching school users:", error);
-=======
         console.error("❌ Error fetching school users:", error.message);
         console.error("❌ Error details:", error);
->>>>>>> b280240 (first commit)
         return [];
     }
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b280240 (first commit)
 const generateParentId = async () => {
     let uniqueId;
     let exists;
@@ -129,12 +99,6 @@ const generateParentId = async () => {
 
 const registerParent = async (req, res) => {
     try {
-<<<<<<< HEAD
-        const { name, phoneNumber, password, pushToken } = req.body;
-
-        if (!name || !phoneNumber || !password || !pushToken) {
-            return res.status(400).json({ message: "Name, phone number, password, and push token are required." });
-=======
         const { name, phoneNumber, password, pushToken, schoolId } = req.body;
 
         if (!name || !phoneNumber || !password || !pushToken || !schoolId) {
@@ -147,7 +111,6 @@ const registerParent = async (req, res) => {
         
         if (!schoolExists) {
             return res.status(400).json({ message: "Invalid school ID. Please select a valid school." });
->>>>>>> b280240 (first commit)
         }
 
         let parent = await PushToken.findOne({ phoneNumber });
@@ -155,10 +118,7 @@ const registerParent = async (req, res) => {
         if (parent) {
             parent.name = name;
             parent.pushToken = pushToken; // Update push token
-<<<<<<< HEAD
-=======
             parent.schoolId = schoolId; // Update school ID
->>>>>>> b280240 (first commit)
             await parent.save();
         } else {
             const parentId = await generateParentId(); // Generate unique parentId
@@ -169,10 +129,7 @@ const registerParent = async (req, res) => {
                 phoneNumber,
                 password, // Password will be hashed by the schema middleware
                 pushToken,
-<<<<<<< HEAD
-=======
                 schoolId,
->>>>>>> b280240 (first commit)
                 students: []
             });
             await parent.save();
@@ -185,13 +142,6 @@ const registerParent = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> b280240 (first commit)
 const loginParent = async (req, res) => {
     try {
         const { phoneNumber, password } = req.body;
@@ -224,8 +174,6 @@ const loginParent = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-=======
 async function validateStudentInSchool(studentId, schoolId = null) {
     try {
         console.log(`Validating student: ${studentId}${schoolId ? ` for school: ${schoolId}` : ''}`);
@@ -305,7 +253,6 @@ async function validateStudentInSchool(studentId, schoolId = null) {
     }
 }
 
->>>>>>> b280240 (first commit)
 const addStudent = async (req, res) => {
     try {
         const token = req.headers.authorization?.split(' ')[1];
@@ -313,13 +260,8 @@ const addStudent = async (req, res) => {
             return res.status(401).json({ message: "No authentication token provided" });
         }
 
-<<<<<<< HEAD
-        const { studentId, studentName, className } = req.body;
-        console.log('Received student data:', { studentId, studentName, className });
-=======
         const { studentId, studentName, className, schoolId } = req.body;
         console.log('Received student data:', { studentId, studentName, className, schoolId });
->>>>>>> b280240 (first commit)
 
         if (!studentId || !studentName) {
             return res.status(400).json({ message: "Student ID and student name are required." });
@@ -331,9 +273,6 @@ const addStudent = async (req, res) => {
             return res.status(404).json({ message: "Parent not found" });
         }
 
-<<<<<<< HEAD
-        // Check if the student already exists
-=======
         console.log('Parent data:', {
             parentId: parent.parentId,
             schoolId: parent.schoolId,
@@ -349,30 +288,19 @@ const addStudent = async (req, res) => {
         }
 
         // Check if the student already exists in the parent's account
->>>>>>> b280240 (first commit)
         const studentExists = parent.students.some(s => s.studentId === studentId);
         if (!studentExists) {
             // Ensure className is not empty
             const validClassName = className && className.trim() !== '' ? className : 'Class Not Specified';
             console.log('Adding new student with class name:', validClassName);
             
-<<<<<<< HEAD
-=======
             // Use the parent's schoolId if available, otherwise use the one from the request
             const validSchoolId = parent.schoolId || schoolId || '';
             
->>>>>>> b280240 (first commit)
             parent.students.push({ 
                 studentId, 
                 studentName,
                 className: validClassName,
-<<<<<<< HEAD
-                notificationsEnabled: false
-            });
-            await parent.save();
-        } else {
-            // Update existing student's class name if provided
-=======
                 schoolId: validSchoolId,
                 notificationsEnabled: false
             });
@@ -380,16 +308,12 @@ const addStudent = async (req, res) => {
             console.log(`Student ${studentId} added successfully for parent ${parent.parentId}`);
         } else {
             // Update existing student's information if provided
->>>>>>> b280240 (first commit)
             const studentIndex = parent.students.findIndex(s => s.studentId === studentId);
             if (className && className.trim() !== '') {
                 console.log('Updating existing student class name to:', className);
                 parent.students[studentIndex].className = className;
                 await parent.save();
-<<<<<<< HEAD
-=======
                 console.log(`Student ${studentId} updated successfully`);
->>>>>>> b280240 (first commit)
             }
         }
 
@@ -537,9 +461,6 @@ const sendTestNotification = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-module.exports={registerParent, loginParent, addStudent, deleteStudent, getStudents, updateNotificationPreference, sendTestNotification }
-=======
 const getSchools = async (req, res) => {
     try {
         const schools = await fetchSchools();
@@ -563,4 +484,3 @@ module.exports = {
     updateNotificationPreference,
     sendTestNotification
 };
->>>>>>> b280240 (first commit)

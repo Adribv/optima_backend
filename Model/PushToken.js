@@ -1,41 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-<<<<<<< HEAD
-const PushTokenSchema = new mongoose.Schema({
-    parentId: {
-        type: String,
-      
-        unique: true
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    phoneNumber: {
-        type: String,
-     
-        unique: true
-    },
-    password: {
-        type: String,
-    },
-    pushToken: {
-        type: String,
-       
-        unique: true  // Ensure only one entry per device token
-    },
-    students: [{
-        studentId: {
-            type: String,
-           
-        },
-        studentName: {
-            type: String,
-           
-        }
-    }],
-=======
 // Schema for student information
 const studentSchema = new mongoose.Schema({
     studentId: {
@@ -62,20 +27,12 @@ const studentSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
->>>>>>> b280240 (first commit)
     createdAt: {
         type: Date,
         default: Date.now
     }
 });
 
-<<<<<<< HEAD
-// Hash password before saving
-PushTokenSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
-    
-    try {
-=======
 // Main schema for parent/guardian information
 const pushTokenSchema = new mongoose.Schema({
     parentId: {
@@ -140,7 +97,6 @@ pushTokenSchema.pre('save', async function(next) {
         if (!this.isModified('password')) return next();
         
         // Generate salt and hash password
->>>>>>> b280240 (first commit)
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
         next();
@@ -149,9 +105,6 @@ pushTokenSchema.pre('save', async function(next) {
     }
 });
 
-<<<<<<< HEAD
-module.exports = mongoose.model('PushToken', PushTokenSchema);
-=======
 // Method to compare password for login
 pushTokenSchema.methods.comparePassword = async function(candidatePassword) {
     try {
@@ -190,4 +143,3 @@ pushTokenSchema.index({ 'students.studentId': 1 });
 const PushToken = mongoose.model('PushToken', pushTokenSchema);
 
 module.exports = PushToken;
->>>>>>> b280240 (first commit)
